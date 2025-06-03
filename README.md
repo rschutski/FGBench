@@ -96,3 +96,10 @@ classification_dataset_dict = {
     'clintox': ['drugs approved by the FDA and passed clinical trials'] # 1 task
     }
 ```
+
+## Dataset Processing
+```bash
+python build_dataset.py [DATASET_NAME] # Build standard dataset 
+python build_qa.py [DATASET_NAME] # Apply template to build QA
+python split_qa.py # Split dataset to train and test
+```
