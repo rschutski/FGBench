@@ -21,7 +21,7 @@ dataset_test = load_dataset("xuan-liu/FGBench", split = "test") # Benchmark data
 dataset_train = load_dataset("xuan-liu/FGBench", split = "train")
 ```
 
-# Explanation of each column
+## Explanation of each column
 
 We provide basic Q&A in FGBench for general usage. To build your own Q&A with FGBench data please refer to the below detailed explanation of each columns. 
 
@@ -59,7 +59,7 @@ We provide basic Q&A in FGBench for general usage. To build your own Q&A with FG
 
 `split`: Train/Test split label
 
-# Properties included in this database
+## Properties included in this database
 
 This dataset is constructed with functional group information based on MoleculeNet dataset. The datasets and tasks used in FGBench are listed below.
 
