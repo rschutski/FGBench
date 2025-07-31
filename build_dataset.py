@@ -82,6 +82,18 @@ def build_smiles_property_df(dataset):
     print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
     return smiles_property_df_dedupl
 
+def build_smiles_property_df_from_csv(csv_path):
+    # Load the CSV file into a DataFrame, ensuring the 'smiles' and 'y' columns are present
+    df = pd.read_csv(csv_path)
+    assert 'smiles' in df.columns
+    assert 'y' in df.columns
+    smiles_property_df = df[['smiles', 'y']].copy()
+    smiles_property_df['smiles'] = smiles_property_df['smiles'].progress_apply(canonicalize_smiles)
+    smiles_property_df = smiles_property_df.dropna()
+    smiles_property_df_dedupl = smiles_property_df.drop_duplicates(subset=['smiles'])
+    print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
+    return smiles_property_df_dedupl
+
 def get_similarity_df(df):
     assert 'smiles' in df.columns
     fpgen = AllChem.GetMorganGenerator(radius=2,fpSize=512)
@@ -160,6 +172,7 @@ def compare_large_dataset(df, threshold=0.7, name = None):
             pbar.set_postfix(valid=valid_count)
     print(f"Similarity comparison complete. Results saved to: {output_csv_path}")
     return None
+
     
 def run(dataset_name, threshold=0.7):
     dataset = get_dataset(dataset_name)
