@@ -21,6 +21,29 @@ dataset_test = load_dataset("xuan-liu/FGBench", split = "test") # Benchmark data
 dataset_train = load_dataset("xuan-liu/FGBench", split = "train")
 ```
 
+## Preparing your own dataset
+
+### Step 1: Build FG comparison data
+Your dataset should have two columns 'smiles' and 'y'. This step processes the FGs in molecules.
+
+```python
+from build_dataset import build_smiles_property_df_from_csv, get_compare_df
+
+dataset_name = 'YOUR_DATASET_NAME'
+dataset_path = 'YOUR_DATASET_CSV_PATH'
+
+smiles_property_df = build_smiles_property_df_from_csv(dataset_path)
+smiles_property_df.to_csv(f'{dataset_name}_processed.csv', index=False)
+compare_df = get_compare_df(smiles_property_df)
+compare_df.to_csv(f'{dataset_name}_compare.csv', index=False)
+```
+
+### Step 2: Build QA
+This step builds QA based on `smiles_property_df` and `compare_df` prepared in Step 1.
+
+In the `build_qa.py`, please indicate the dataset is a `regression` or `classification` task. It  will build corresponding QA for the dataset.
+
+
 ## Explanation of each column
 
 We provide basic Q&A in FGBench for general usage. To build your own Q&A with FGBench data please refer to the below detailed explanation of each columns. 
@@ -137,7 +160,7 @@ classification_dataset_dict = {
     }
 ```
 
-## Dataset Processing
+## Dataset Processing for MoleculeNet
 ```bash
 python build_dataset.py [DATASET_NAME] # Build standard dataset 
 python build_qa.py [DATASET_NAME] # Apply template to build QA
