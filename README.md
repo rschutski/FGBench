@@ -166,3 +166,13 @@ python build_dataset.py [DATASET_NAME] # Build standard dataset
 python build_qa.py [DATASET_NAME] # Apply template to build QA
 python split_qa.py # Split dataset to train and test
 ```
+
+## Citation
+```
+@article{liu2025fgbench,
+  title={FGBench: A Dataset and Benchmark for Molecular Property Reasoning at Functional Group-Level in Large Language Models},
+  author={Liu, Xuan and Ouyang, Siru and Zhong, Xianrui and Han, Jiawei and Zhao, Huimin},
+  journal={arXiv preprint arXiv:2508.01055},
+  year={2025}
+}
+```
