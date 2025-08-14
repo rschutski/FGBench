@@ -2,9 +2,9 @@
 
 # FGBench: A Dataset and Benchmark for Molecular Property Reasoning at Functional Group-Level in Large Language Models
 
-[![Dataset](https://img.shields.io/badge/Dataset-%F0%9F%92%BE-green?logoWidth=40)](https://huggingface.co/datasets/xuan-liu/FGBench/)
-[![Code](https://img.shields.io/badge/Code-%F0%9F%8C%8D-blue?logoWidth=40)](https://github.com/xuanliugit/FGBench)
-[![Paper](https://img.shields.io/badge/Paper-%F0%9F%93%83-red?logoWidth=40)](https://www.arxiv.org/abs/2508.01055)
+[![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-yellow?logoWidth=40)](https://huggingface.co/datasets/xuan-liu/FGBench/)
+[![Code](https://img.shields.io/badge/Code-xuanliugit/FGBench-blue?logoWidth=40)](https://github.com/xuanliugit/FGBench)
+[![Paper](https://img.shields.io/badge/Paper-arXiv:2508.01055-red?logoWidth=40)](https://www.arxiv.org/abs/2508.01055)
 
 
 </div>
