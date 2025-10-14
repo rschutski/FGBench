@@ -9,6 +9,10 @@
 
 </div>
 
+## News
+
+* 2025.9: This work has been accepted by [NeurIPS 2025 D&B Track](https://neurips.cc/virtual/2025/poster/121617).
+
 ## Quick start
 ### Usage 
 
@@ -27,15 +31,15 @@ dataset_train = load_dataset("xuan-liu/FGBench", split = "train")
 Your dataset should have two columns 'smiles' and 'y'. This step processes the FGs in molecules.
 
 ```python
-from build_dataset import build_smiles_property_df_from_csv, get_compare_df
+from fgbench.build_dataset import build_smiles_property_df_from_csv, get_compare_df
 
 dataset_name = 'YOUR_DATASET_NAME'
 dataset_path = 'YOUR_DATASET_CSV_PATH'
 
 smiles_property_df = build_smiles_property_df_from_csv(dataset_path)
-smiles_property_df.to_csv(f'{dataset_name}_processed.csv', index=False)
+smiles_property_df.to_csv(f'data/molnet/{dataset_name}.csv', index=False)
 compare_df = get_compare_df(smiles_property_df)
-compare_df.to_csv(f'{dataset_name}_compare.csv', index=False)
+compare_df.to_csv(f'data/molnet/{dataset_name}_compare.csv', index=False)
 ```
 
 ### Step 2: Build QA
@@ -43,6 +47,15 @@ This step builds QA based on `smiles_property_df` and `compare_df` prepared in S
 
 In the `build_qa.py`, please indicate the dataset is a `regression` or `classification` task. It  will build corresponding QA for the dataset.
 
+```python
+from fgbench import build_qa
+
+task_list = ['property 1', 'property 2', ...]
+
+build_qa.run(dataset_name, task_list, 'regression') # for regression tasks
+# Or run(dataset_name, task_list, 'classification') for classification tasks
+```
+This will save the QA jsonl file to `data/fgbench_qa/{dataset_name}.jsonl`
 
 ## Explanation of each column
 

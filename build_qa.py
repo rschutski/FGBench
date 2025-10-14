@@ -97,8 +97,8 @@ def rebuild_from_comparison(target_smiles, ref_smiles, target_diff, ref_diff):
     ref_to_target_note_map = {ref_note: target_note for target_note, ref_note in atom_matches_on_note}
     ref_note_mapped_list = list(ref_to_target_note_map.keys())
     
+    # Get outer bonds of each fg in ref molecule
     ref_fg_list_outer_bonds = get_outer_bond_from_fg_list(ref_mol, ref_fg_diff)
-
 
     fg_tuple_list = []
     unique_bonds = []
@@ -163,7 +163,7 @@ def build_edit_text(disconnect_list, connect_dict):
         return f'by removing the following functional groups: \n{removed_fgs} \nand adding the following functional groups: \n{added_fgs}'
     
     if disconnect_list and not connect_dict:
-        removed_fgs = '\n'.join([f'* removing {fg_name} at postion {fg_atoms}' for fg_name, fg_atoms in disconnect_list])
+        removed_fgs = '\n'.join([f'* removing {fg_name} at position {fg_atoms}' for fg_name, fg_atoms in disconnect_list])
         return f'by removing the following functional groups: \n{removed_fgs}'
     
     if not disconnect_list and connect_dict:
