@@ -22,10 +22,10 @@ def run_fgs_csv(path, smiles_col='smiles', save_dir=True, afg=AccFG()):
         df = pd.read_csv(path, sep=';', on_bad_lines='skip')
     smiles_fgs_df = df[[smiles_col]].rename(columns={smiles_col: 'smiles'})
     print(f'Processing {data_name} dataset...')
-    smiles_fgs_df['smiles'] = smiles_fgs_df['smiles'].progress_apply(lambda x: canonical_smiles(x))
+    smiles_fgs_df['smiles'] = smiles_fgs_df['smiles'].apply(lambda x: canonical_smiles(x))
     smiles_fgs_df = smiles_fgs_df.dropna()
     print('Calculating functional groups...')
-    smiles_fgs_df['fgs'] = smiles_fgs_df['smiles'].progress_apply(lambda x: afg.run(x))
+    smiles_fgs_df['fgs'] = smiles_fgs_df['smiles'].apply(lambda x: afg.run(x))
     if save_dir:
         smiles_fgs_df.to_csv(f'molecule_data/{data_name}_fgs.csv', index=False)
     return smiles_fgs_df

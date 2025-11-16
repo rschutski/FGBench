@@ -1,7 +1,5 @@
 from tqdm.auto import tqdm
 from rdkit import DataStructs
-from utils import data_utils
-from utils.data_utils import MolNetData
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -11,18 +9,11 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 from func_timeout import func_timeout, FunctionTimedOut
 
-import os
-import sys
-#PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_DIR = os.getcwd()
-ACCFG_DIR = os.path.join(PROJECT_DIR, 'AccFG_private')
-sys.path.append(ACCFG_DIR)
 from accfg import (AccFG, draw_mol_with_fgs, molimg, set_atom_idx,
                    img_grid, compare_mols, draw_compare_mols,
                    draw_RascalMCES, print_fg_tree)
 afg_lite = AccFG(print_load_info=True, lite=True)
 
-from utils.fg_utils import *
 import deepchem as dc
 import argparse
 
@@ -76,7 +67,7 @@ def build_smiles_property_df(dataset):
     smiles_property_df = pd.DataFrame(dataset.ids, columns=['smiles'])
     for i in range(dataset.y.shape[1]):
         smiles_property_df[i] = dataset.y[:, i]
-    smiles_property_df['smiles'] = smiles_property_df['smiles'].progress_apply(canonicalize_smiles)
+    smiles_property_df['smiles'] = smiles_property_df['smiles'].apply(canonicalize_smiles)
     smiles_property_df = smiles_property_df.dropna()
     smiles_property_df_dedupl = smiles_property_df.drop_duplicates(subset=['smiles'])
     print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
@@ -88,7 +79,7 @@ def build_smiles_property_df_from_csv(csv_path):
     assert 'smiles' in df.columns
     assert 'y' in df.columns
     smiles_property_df = df[['smiles', 'y']].copy()
-    smiles_property_df['smiles'] = smiles_property_df['smiles'].progress_apply(canonicalize_smiles)
+    smiles_property_df['smiles'] = smiles_property_df['smiles'].apply(canonicalize_smiles)
     smiles_property_df = smiles_property_df.dropna()
     smiles_property_df_dedupl = smiles_property_df.drop_duplicates(subset=['smiles'])
     print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
@@ -120,11 +111,13 @@ def get_compare_df(df, threshold=0.7):
     row_indices, col_indices = np.where(condition)
     pairs = [(similarity_df.index[row], similarity_df.columns[col]) for row, col in zip(row_indices, col_indices)]
 
-    compare_df = pd.DataFrame(columns=['smiles_pair'])
-    compare_df['smiles_pair'] = pairs
-    compare_df['fg_alkane_diff'] = compare_df['smiles_pair'].progress_apply(lambda x: compare_mols_in_df(x[0], x[1], afg_lite))
+    compare_df = pd.DataFrame({'smiles_pair': pairs})
+    if compare_df.empty:
+        print(f'Found 0 pairs of molecules with similarity > {threshold}')
+        return pd.DataFrame(columns=['target_smiles','ref_smiles','target_diff','ref_diff'])
+    compare_df['fg_alkane_diff'] = compare_df['smiles_pair'].apply(lambda x: compare_mols_in_df(x[0], x[1], afg_lite))
     compare_df = compare_df.dropna(subset=['fg_alkane_diff'])
-    compare_df = compare_df[compare_df['fg_alkane_diff'] != (([],[]),([],[]))]
+    compare_df = compare_df[compare_df['fg_alkane_diff'].apply(lambda v: v != (([],[]),([],[])))]
     compare_df['target_smiles'] = compare_df['smiles_pair'].apply(lambda x: x[0])
     compare_df['ref_smiles'] = compare_df['smiles_pair'].apply(lambda x: x[1])
     compare_df['target_diff'] = compare_df['fg_alkane_diff'].apply(lambda x: x[0])
@@ -205,3 +198,9 @@ if __name__ == '__main__':
     for dataset_name in args.dataset:
         print(f'Processing {dataset_name}...')
         run(dataset_name, args.threshold)
+
+
+
+
+
+

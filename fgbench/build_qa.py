@@ -1,19 +1,10 @@
 from tqdm.auto import tqdm
 from rdkit import DataStructs
-from utils import data_utils
-from utils.data_utils import MolNetData, get_iupac_name
 import pandas as pd
 from rdkit import Chem
 from collections import Counter, defaultdict
 import numpy as np
 import argparse
-
-import os
-import sys
-#PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_DIR = os.getcwd()
-ACCFG_DIR = os.path.join(PROJECT_DIR, 'AccFG_private')
-sys.path.append(ACCFG_DIR)
 
 from accfg import (AccFG, draw_mol_with_fgs, molimg, set_atom_idx,
                    img_grid, compare_mols, draw_compare_mols,
@@ -22,8 +13,7 @@ from accfg import (AccFG, draw_mol_with_fgs, molimg, set_atom_idx,
                    remove_atoms_add_hs, get_outer_bond_from_fg_list)
 afg_lite = AccFG(print_load_info=True, lite=True)
 
-from utils.fg_utils import *
-from prompts.question import (single_bool_classification_question, single_bool_regression_question, single_value_regression_question, 
+from .prompts.question import (single_bool_classification_question, single_bool_regression_question, single_value_regression_question, 
                                interaction_bool_classification_question, interaction_bool_regression_question, interaction_value_regression_question, 
                                comparison_bool_classification_question, comparison_bool_regression_question, comparison_value_regression_question)
 

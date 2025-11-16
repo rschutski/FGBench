@@ -61,3 +61,5 @@ comparison_value_regression_question = '''
 For a target molecule whose SMILES is {target_smiles} and a reference molecule whose SMILES is {ref_smiles}, the reference molecule has the value for the property of {property_name} as {ref_label}. What is the value change of {property_name} for the target molecule compared to the reference molecule? Your final answer should be "[value]" for increase or "-[value]" for decrease.
 '''
 
+
+

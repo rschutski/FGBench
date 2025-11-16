@@ -1,0 +1,38 @@
+[project]
+name = "fgbench"
+version = "0.1.0"
+description = "FGBench dataset builders and QA generation utilities"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "deepchem",
+    "func-timeout",
+    "ipython",
+    "matplotlib",
+    "networkx",
+    "numpy<2.0.0",
+    "pandas",
+    "Pillow",
+    "rdkit==2023.09.3",
+    "scikit-learn",
+    # "swifter",
+    "tqdm==4.67.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# Package the top-level packages so imports work without sys.path hacks
+packages = [
+  "fgbench",
+  "AccFG_private/accfg",
+]
+
+[tool.hatch.build]
+include = [
+  "AccFG_private/accfg/*.csv",
+  "README.md",
+  "LICENSE",
+]

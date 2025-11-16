@@ -13,7 +13,6 @@ import os
 from collections import Counter
 from tqdm import tqdm
 from IPython.display import display
-import swifter
 from IPython.display import SVG
 import networkx as nx
 import warnings
