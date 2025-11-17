@@ -16,7 +16,10 @@ afg_lite = AccFG(print_load_info=True, lite=True)
 
 import deepchem as dc
 import argparse
+import logging
 from typing import Optional, Tuple, List, Generator, Any
+
+logger = logging.getLogger(__name__)
 
 
 def get_dataset(name: str) -> dc.data.Dataset:
@@ -118,7 +121,7 @@ def build_smiles_property_df(dataset: dc.data.Dataset) -> pd.DataFrame:
     smiles_property_df['smiles'] = smiles_property_df['smiles'].apply(canonicalize_smiles)
     smiles_property_df = smiles_property_df.dropna()
     smiles_property_df_dedupl = smiles_property_df.drop_duplicates(subset=['smiles'])
-    print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
+    logger.debug(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
     return smiles_property_df_dedupl
 
 
@@ -153,7 +156,7 @@ def build_smiles_property_df_from_csv(csv_path: str) -> pd.DataFrame:
     smiles_property_df['smiles'] = smiles_property_df['smiles'].apply(canonicalize_smiles)
     smiles_property_df = smiles_property_df.dropna()
     smiles_property_df_dedupl = smiles_property_df.drop_duplicates(subset=['smiles'])
-    print(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
+    logger.debug(f'removed {len(smiles_property_df) - len(smiles_property_df_dedupl)} duplicates, and get {len(smiles_property_df_dedupl)} unique smiles')
     return smiles_property_df_dedupl
 
 
@@ -260,7 +263,7 @@ def get_compare_df(df: pd.DataFrame, threshold: float = 0.7) -> pd.DataFrame:
 
     compare_df = pd.DataFrame({'smiles_pair': pairs})
     if compare_df.empty:
-        print(f'Found 0 pairs of molecules with similarity > {threshold}')
+        logger.info(f'Found 0 pairs of molecules with similarity > {threshold}')
         return pd.DataFrame(columns=['target_smiles','ref_smiles','target_diff','ref_diff'])
     compare_df['fg_alkane_diff'] = compare_df['smiles_pair'].apply(lambda x: compare_mols_in_df(x[0], x[1], afg_lite))
     compare_df = compare_df.dropna(subset=['fg_alkane_diff'])
@@ -270,7 +273,7 @@ def get_compare_df(df: pd.DataFrame, threshold: float = 0.7) -> pd.DataFrame:
     compare_df['target_diff'] = compare_df['fg_alkane_diff'].apply(lambda x: x[0])
     compare_df['ref_diff'] = compare_df['fg_alkane_diff'].apply(lambda x: x[1])
     compare_df.drop(columns=['smiles_pair','fg_alkane_diff'], inplace=True)
-    print(f'Found {len(compare_df)} pairs of molecules with similarity > f{threshold}')
+    logger.info(f'Found {len(compare_df)} pairs of molecules with similarity > {threshold}')
     return compare_df
 
 
@@ -359,13 +362,13 @@ def compare_large_dataset(df: pd.DataFrame, threshold: float = 0.7, name: Option
         datasets, `get_compare_df` may be more efficient.
     """
     smi_list, fp_list = generate_fingerprints(df)
-    print("Finding similar molecule pairs...")
+    logger.info("Finding similar molecule pairs...")
     similar_pairs = list(get_similar_pairs(smi_list, fp_list, threshold))
-    print(f'Found {len(similar_pairs)} pairs of molecules with similarity > {threshold}')
+    logger.info(f'Found {len(similar_pairs)} pairs of molecules with similarity > {threshold}')
     valid_count = 0
     similar_pairs_df = pd.DataFrame(similar_pairs, columns=["target_smiles", "ref_smiles"])
     similar_pairs_df.to_csv(f"data/molnet/{name}_similar_pairs.csv", index=False)
-    print("Saved similar pairs to similar_pairs.csv")
+    logger.info("Saved similar pairs to similar_pairs.csv")
     
     output_csv_path = f"data/molnet/{name}_compare.csv"
     with open(output_csv_path, 'w') as f:
@@ -378,7 +381,7 @@ def compare_large_dataset(df: pd.DataFrame, threshold: float = 0.7, name: Option
                 target_diff, ref_diff = fg_alkane_diff
                 f.write(f'"{smi1}","{smi2}","{target_diff}","{ref_diff}"\n')
             pbar.set_postfix(valid=valid_count)
-    print(f"Similarity comparison complete. Results saved to: {output_csv_path}")
+    logger.info(f"Similarity comparison complete. Results saved to: {output_csv_path}")
     return None
 
   
@@ -407,16 +410,16 @@ def run(dataset_name: str, threshold: float = 0.7) -> None:
         ValueError: If the dataset name is not recognized by `get_dataset`.
     """
     dataset = get_dataset(dataset_name)
-    print(f'Building smiles property dataframe for {dataset_name}...')
+    logger.info(f'Building smiles property dataframe for {dataset_name}...')
     smiles_property_df = build_smiles_property_df(dataset)
     smiles_property_df.to_csv(f'data/molnet/{dataset_name}.csv', index=False)
     
     if len(smiles_property_df) < 10000:
-        print(f'Building comparison dataframe for {dataset_name}...')
+        logger.info(f'Building comparison dataframe for {dataset_name}...')
         compare_df = get_compare_df(smiles_property_df, threshold)
         compare_df.to_csv(f'data/molnet/{dataset_name}_compare.csv', index=False)
     else:
-        print(f'Building large comparison dataframe for {dataset_name}...')
+        logger.info(f'Building large comparison dataframe for {dataset_name}...')
         compare_large_dataset(smiles_property_df, threshold, name=dataset_name)
     
     return None
@@ -434,9 +437,10 @@ def arg_parser() -> argparse.Namespace:
     return args
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     args = arg_parser()
     for dataset_name in args.dataset:
-        print(f'Processing {dataset_name}...')
+        logger.info(f'Processing {dataset_name}...')
         run(dataset_name, args.threshold)
 
 

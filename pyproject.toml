@@ -7,16 +7,12 @@ requires-python = ">=3.12"
 dependencies = [
     "deepchem",
     "func-timeout",
-    "ipython",
-    "matplotlib",
-    "networkx",
     "numpy<2.0.0",
     "pandas",
-    "Pillow",
     "rdkit==2023.09.3",
     "scikit-learn",
-    # "swifter",
     "tqdm==4.67.0",
+    "accfg==0.0.7"
 ]
 
 [build-system]
@@ -27,12 +23,10 @@ build-backend = "hatchling.build"
 # Package the top-level packages so imports work without sys.path hacks
 packages = [
   "fgbench",
-  "AccFG_private/accfg",
-]
+] 
 
 [tool.hatch.build]
 include = [
-  "AccFG_private/accfg/*.csv",
   "README.md",
   "LICENSE",
 ]
